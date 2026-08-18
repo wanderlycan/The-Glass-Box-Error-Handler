@@ -12,7 +12,7 @@ A lightweight, drop-in utility that intercepts system crashes globally, automati
 | :--- | :--- | :--- |
 | **Android** | Kotlin / Jetpack Compose | Intercepts unhandled app exceptions globally using `Thread.UncaughtExceptionHandler`. |
 | **Windows** | C# / .NET (WPF / WinForms) | Intercepts unhandled desktop exceptions globally using `AppDomain.CurrentDomain.UnhandledException`. |
-
+| **Linux** | C# / .NET (.NET Core / Mono) | Intercepts unhandled system exceptions globally, dumping diagnostics to local logs and clipboard. |
 ---
 
 ## 🌍 Why use this?
@@ -34,5 +34,23 @@ class MyApplication : Application() {
         super.onCreate()
         // Ativa o interceptador global de crashes no Android
         AppCrashHandler.init(this)
+    }
+}
+
+## 🐧 Linux Implementation
+
+To initialize the global error handler in your Linux .NET application, call `LinuxGlassBox.Init()` at the very entry point of your program (`Program.cs`):
+
+```csharp
+using GlassBox.Linux;
+
+class Program
+{
+    static void Main(string[] args)
+    {
+        // Ativa o interceptador global de crashes no Linux
+        LinuxGlassBox.Init();
+
+        // Seu código principal aqui...
     }
 }
