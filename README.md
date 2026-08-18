@@ -15,6 +15,8 @@ In many regions, developers and users face unstable connections and diverse hard
 
 - **implementation**
 - To ensure that monitoring begins the exact second the application is opened (even before any screen loads), initialize the handler in your project's custom Application class (MyApplication.kt):
+
+  
 - import android.app.Application
 
 class MyApplication : Application() {
