@@ -1,0 +1,42 @@
+using System;
+using System.Windows; // Ou System.Windows.Forms dependendo da interface
+
+public static class WindowsGlassBox
+{
+    public static void Init()
+    {
+        // Intercepta qualquer exceção global não tratada no Windows
+        AppDomain.CurrentDomain.UnhandledException += (sender, args) =>
+        {
+            var exception = args.ExceptionObject as Exception;
+            string errorLog = exception?.ToString() ?? "Erro desconhecido no sistema.";
+
+            try
+            {
+                // 1. Joga o erro direto para a Área de Transferência (Clipboard) do Windows
+                Clipboard.SetText(errorLog);
+            }
+            catch
+            {
+                // Fallback de segurança caso o clipboard esteja bloqueado
+            }
+
+            try
+            {
+                // 2. Exibe um aviso visual rápido para o usuário antes do processo morrer
+                MessageBox.Show(
+                    "Ops! O aplicativo encontrou um erro fatal e fechou.\n\nO log detalhado já foi copiado para a sua área de transferência (Ctrl+V).",
+                    "GlassBox Windows - Crash Handler",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error
+                );
+            }
+            catch
+            {
+                // Fallback caso a interface gráfica já tenha sido destruída
+            }
+
+            // O Windows encerra o processo de forma limpa após o evento
+        };
+    }
+}
