@@ -1,5 +1,6 @@
 # The-Glass-Box-Error-Handler
 Stop guessing why your app crashed. Turn every failure into a diagnostic window.
+
 # 🛡️ Android GlassBox Error Handler
 
 A lightweight, drop-in utility for Kotlin & Jetpack Compose that intercepts system crashes and Firestore errors, displaying them in a user-friendly, copy-pasteable diagnostic window.
@@ -8,22 +9,23 @@ A lightweight, drop-in utility for Kotlin & Jetpack Compose that intercepts syst
 In many regions, developers and users face unstable connections and diverse hardware. Instead of a generic "App has stopped" message, **GlassBox** reveals the technical root cause (like `PERMISSION_DENIED` or `CredentialException`) directly to the user or support team.
 
 ## 🚀 Key Features
-- **Zero-Footprint**: No background services or battery drain.
-- **Universal Interceptor**: Can be integrated into any ViewModel or Repository.
-- **Support-Ready**: Allows users to copy the raw error log with one tap.
-- **Transparency**: Fully compliant with Android best practices—it doesn't hide errors, it explains them.
+- **Zero-Footprint**: No background services or battery drain (consumo irrisório de RAM).
+- **Universal Interceptor**: Intercepts uncaught exceptions globally using `Thread.UncaughtExceptionHandler`.
+- **Support-Ready**: Automatically copies the raw error log to the clipboard with one tap and shows an instant feedback Toast.
+- **Transparency**: Fully compliant with Android best practices—it doesn't hide fatal crashes behind risky states, ensuring a clean exit while preserving the diagnostic log.
 
-- **implementation**
-- To ensure that monitoring begins the exact second the application is opened (even before any screen loads), initialize the handler in your project's custom Application class (MyApplication.kt):
+## 📦 Installation & Implementation
 
-  
-- import android.app.Application
+To ensure that monitoring begins the exact second the application is opened (even before any screen loads), initialize the handler in your project's custom `Application` class (`MyApplication.kt`):
+
+```kotlin
+import android.app.Application
 
 class MyApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         
         // Ativa o interceptador global de crashes
-        AppCrashHandler.initialize(this)
+        AppCrashHandler.init(this)
     }
 }
