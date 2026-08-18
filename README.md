@@ -13,14 +13,15 @@ In many regions, developers and users face unstable connections and diverse hard
 - **Support-Ready**: Allows users to copy the raw error log with one tap.
 - **Transparency**: Fully compliant with Android best practices—it doesn't hide errors, it explains them.
 
-## 🛠️ Implementation
+- **implementation**
+- To ensure that monitoring begins the exact second the application is opened (even before any screen loads), initialize the handler in your project's custom Application class (MyApplication.kt):
+- import android.app.Application
 
-### 1. The Error Interceptor (Universal Logic)
-Add this to your `BaseViewModel` or any logic handler:
-
-```kotlin
-fun handleFailure(exception: Exception) {
-    val technicalLog = exception.stackTraceToString()
-    // Trigger your UI to show the GlassBox Dialog
-    _uiErrorState.value = technicalLog
+class MyApplication : Application() {
+    override fun onCreate() {
+        super.onCreate()
+        
+        // Ativa o interceptador global de crashes
+        AppCrashHandler.initialize(this)
+    }
 }
