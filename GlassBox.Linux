@@ -1,0 +1,95 @@
+using System;
+using System.IO;
+using System.Threading;
+
+namespace GlassBox.Linux
+{
+    public static class LinuxGlassBox
+    {
+        private static bool _isInitialized = false;
+
+        public static void Init()
+        {
+            if (_isInitialized) return;
+            _isInitialized = true;
+
+            // 1. Captura exceções globais não tratadas na Thread principal
+            AppDomain.CurrentDomain.UnhandledException += (sender, args) =>
+            {
+                if (args.ExceptionObject is Exception ex)
+                {
+                    HandleCrash(ex, "AppDomain.UnhandledException");
+                }
+            };
+
+            // 2. Captura exceções não tratadas em Tasks assíncronas
+            TaskScheduler.UnobservedTaskException += (sender, args) =>
+            {
+                HandleCrash(args.Exception, "TaskScheduler.UnobservedTaskException");
+                args.SetObserved(); // Evita que o processo encerre de forma abrupta antes de logar, se desejado
+            };
+            
+            // 3. Captura falhas gerais de threads não tratadas
+            AppDomain.CurrentDomain.FirstChanceException += (sender, args) =>
+            {
+                // Opcional: útil para monitoramento detalhado, mas geralmente mantemos apenas o Unhandled
+            };
+        }
+
+        private static void HandleCrash(Exception ex, string source)
+        {
+            try
+            {
+                string crashReport = 
+                    $"========================================\n" +
+                    $" [GlassBox] Crash Diagnostic Report\n" +
+                    $" Platform: Linux\n" +
+                    $" Source: {source}\n" +
+                    $" Time: {DateTime.Now:yyyy-MM-dd HH:mm:ss}\n" +
+                    $"========================================\n\n" +
+                    $"{ex.ToString()}\n";
+
+                // Tenta copiar para o clipboard (Exige ferramentas nativas como xclip ou wl-clipboard em ambientes gráficos)
+                CopyToLinuxClipboard(crashReport);
+
+                // Salva um backup de segurança em um arquivo local na pasta do usuário ou diretório atual
+                string logPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "crash_report.log");
+                File.WriteAllText(logPath, crashReport);
+
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("\n[GlassBox] Application encountered a fatal error!");
+                Console.WriteLine($"[GlassBox] Stack trace saved to: {logPath}");
+                Console.WriteLine("[GlassBox] Stack trace copied to clipboard (if clipboard utility is present).");
+                Console.ResetColor();
+            }
+            catch (Exception internalEx)
+            {
+                Console.WriteLine($"[GlassBox] Failed to process crash report: {internalEx.Message}");
+            }
+        }
+
+        private static void CopyToLinuxClipboard(string text)
+        {
+            try
+            {
+                // Detecta e envia para o clipboard do Linux via comandos padrões (X11 / Wayland)
+                string escapedText = text.Replace("\"", "\\\"");
+                
+                var processInfo = new System.Diagnostics.ProcessStartInfo
+                {
+                    FileName = "/bin/bash",
+                    Arguments = $"-c \"echo \\\"{escapedText}\\\" | (xclip -selection clipboard 2>/dev/null || wl-copy 2>/dev/null || true)\"",
+                    RedirectStandardOutput = false,
+                    UseShellExecute = false,
+                    CreateNoWindow = true
+                };
+
+                System.Diagnostics.Process.Start(processInfo);
+            }
+            catch
+            {
+                // Silencia caso o ambiente seja totalmente headless (sem interface gráfica ou utilitários)
+            }
+        }
+    }
+}
