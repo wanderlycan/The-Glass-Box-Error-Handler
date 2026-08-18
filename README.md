@@ -54,3 +54,16 @@ class Program
         // Seu código principal aqui...
     }
 }
+
+using GlassBox.Desktop;
+
+public partial class App : Application
+{
+    protected override void OnStartup(StartupEventArgs e)
+    {
+        base.OnStartup(e);
+        
+        // Ativa o GlassBox no início da execução
+        WindowsGlassBox.Init();
+    }
+}
