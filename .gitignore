@@ -1,0 +1,20 @@
+# Build outputs
+bin/
+obj/
+build/
+out/
+
+# IDEs
+.vs/
+.idea/
+*.iml
+
+# Android / Gradle
+.gradle/
+local.properties
+*.apk
+*.aab
+
+# Crash reports created while testing
+glassbox-crashes/
+crash-*.log
