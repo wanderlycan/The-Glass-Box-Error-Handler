@@ -6,6 +6,10 @@
 
 > **Boas-vindas!** Copie apenas o arquivo da sua plataforma, inicialize-o no ponto de entrada do app e você já terá um relatório compartilhável quando algo der errado.
 
+## Palavras-chave para descoberta
+
+`error-handler` · `crash-reporter` · `exception-handler` · `stack-trace` · `debugging` · `diagnostics` · `android-kotlin` · `wpf` · `dotnet` · `linux` · `windows` · `desktop-app` · `mobile-development`
+
 ## O que ele cobre
 
 | Plataforma | Arquivo pronto | Captura fatal | Captura silenciosa / assíncrona | Onde salva |
